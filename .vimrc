@@ -1,84 +1,104 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""
-" Description:
-"   This is the .vimrc file
-"
-" Maintainer:
-"   Kévin "Chewie" Sztern
-"   <chewie@deliciousmuffins.net>
-"
-" Complete_version:
-"   You can find the complete configuration,
-"   including all the plugins used, here:
-"   https://github.com/Chewie/configs
-"
-" Acknowledgements:
-"   Several elements of this .vimrc come from Pierre Bourdon's config
-"   You can find it here: https://bitbucket.org/delroth/configs/
-"
-""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""
-" General parameters
-""""""""""""""""""""""""""""""""""""""""""""""""""
-
+set nocompatible
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """"""""""""""""""""""""""""""""""""""""""""""""""
+call plug#begin()
 
-" TODO: At some point I'll need to switch over to the native Vim 8.0 package
-" feature. Either via manual git subtree management, or maybe through minpac?
-"
-" Install vim-plug if we don't already have it
-" Credit to github.com/captbaritone
-if empty(glob("~/.vim/autoload/plug.vim"))
-    " Ensure all needed directories exist  (Thanks @kapadiamush)
-    execute '!mkdir -p ~/.vim/plugged'
-    execute '!mkdir -p ~/.vim/autoload'
-    " Download the actual plugin manager
-    execute '!curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim'
-endif
+" LSP
+Plug 'neoclide/coc.nvim'
 
-call plug#begin('~/.vim/plugged')
-
-" Bag of mappings
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-unimpaired'
-Plug 'scrooloose/nerdcommenter'
-Plug 'romainl/vim-qf'
-
-" Snippets (don't really use them, but eh)
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-
-" Navigation
-Plug 'tpope/vim-vinegar'
-Plug 'ctrlpvim/ctrlp.vim' " TODO: I don't really use that anymore.
-Plug 'mileszs/ack.vim'
-
-" Theming
-Plug 'nanotech/jellybeans.vim'
+" Airline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" Filetype specific plugins
-Plug 'pearofducks/ansible-vim'
-Plug 'vim-pandoc/vim-pandoc-syntax'
-Plug 'vim-pandoc/vim-pandoc'
-Plug '5long/pytest-vim-compiler'
-Plug 'hashivim/vim-terraform'
+" Airline integrations
+Plug 'lambdalisue/battery.vim'
+Plug 'lambdalisue/wifi.vim'
 
-" Tag management
-Plug 'ludovicchabant/vim-gutentags'
+" Vim Polyglot
+Plug 'sheerun/vim-polyglot'
 
-" 'IDE' features
+" Vim Fugitive
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-dispatch'
-Plug 'janko/vim-test'
 
+" Fswitch
+Plug 'derekwyatt/vim-fswitch'
+
+" Vista
+Plug 'liuchengxu/vista.vim'
+
+" Color scheme
+Plug 'joshdick/onedark.vim'
+
+" Nerd fonts
+Plug 'ryanoasis/nerd-fonts'
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" End plugins
+""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#end()
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Color schemes
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+syntax on
+
+set ttimeoutlen=50
+
+" Vim theme
+colorscheme onedark
+
+" Vim Airline configuration
+let g:airline_theme='onedark'
+
+let g:airline#extensions#battery#enabled = 1
+let g:battery#component_format = "%s %v%% %g"
+
+let g:airline#extensions#nerdtree_statusline = 1
+
+let g:airline#extensions#hunks#enabled = 1
+let g:airline#extensions#branch#enabled = 1
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+let g:airline#extensions#coc#enabled = 1
+
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+" unicode symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.paste = '∥'
+let g:airline_symbols.whitespace = 'Ξ'
+
+" airline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Configuration
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Enable filetype detection for plugins and indentation options
 filetype plugin indent on
@@ -104,11 +124,13 @@ set hidden
 
 " Set the time (in milliseconds) spent idle until various actions occur
 " In this configuration, it is particularly useful for the tagbar plugin
-set updatetime=500
+set updatetime=300
 
-" For some stupid reason, vim requires the term to begin with "xterm", so the
-" automatically detected "rxvt-unicode-256color" doesn't work.
-set term=xterm-256color
+" get more space for messages
+set cmdheight=2
+
+" Don't pass messages to |ins-completion-menu|.
+set shortmess+=c
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " User interface
@@ -149,7 +171,7 @@ set t_vb=
 
 " Color the column after textwidth, usually the 80th
 if version >= 703
-  set colorcolumn=+1
+ set colorcolumn=+1
 endif
 
 " Display whitespace characters
@@ -225,7 +247,7 @@ set smarttab
 set autoindent
 
 " This one is complicated. See :help cinoptions-values for details
-set cinoptions=(0,u0,U0,t0,g0,N-s
+set cinoptions=(0,u0,U0,t0,g0,N-s,:0
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " Mappings
@@ -257,18 +279,6 @@ noremap <leader>cw :botright :cw<cr>
 " Run make silently, then skip the 'Press ENTER to continue'
 noremap <leader>m :silent! :make! \| :redraw!<cr>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""
-" Persistence options
-""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Set location of the viminfo file
-set viminfo='20,\"50,<100,n~/.vimtmp/viminfo
-
-" See :h last-position-jump
-augroup last_position_jump
-    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-augroup END
-
 " Persistent undo
 if version >= 703
     set undofile
@@ -277,55 +287,162 @@ if version >= 703
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
-" Plugin mappings and options
-""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Use a slightly darker background color to differentiate with the status line
-let g:jellybeans_background_color_256='232'
-
-" Feel free to switch to another colorscheme
-colorscheme jellybeans
-
-" Disable Ack.vim's mappings on the quickfix and location list windows
-" We use vim-qf mappings instead
-let g:ack_apply_qmappings = 0
-let g:ack_apply_lmappings = 0
-let g:qf_mapping_ack_style = 1
-
-" Override unimpaired quickfix and loc-list mappings to use vim-qf wrapparound
-let g:nremap = {"[q": "", "]q": "", "[l": "", "]l": ""}
-nmap [q <Plug>(qf_qf_previous)
-nmap ]q <Plug>(qf_qf_next)
-nmap [l <Plug>(qf_loc_previous)
-nmap ]l <Plug>(qf_loc_next)
-
-" Launch fugitive's gstatus
-noremap <leader>gs :Gstatus<cr>
-
-" Mappings for vim-test
-nmap <silent> <leader>ts :TestSuite<cr>
-
-" Tell vim-test to use dispatch to run our tests
-let test#strategy = "dispatch"
-
-" Tell Dispatch to use the pytest compiler when we call pytest (the compiler
-" file looks for py.test instead of pytest)
-let g:dispatch_compilers = {'pytest': 'pytest'}
-
-" Add the termdebug built-in plugin
-if version >= 801
-    packadd termdebug
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved
+if has("nvim-0.5.0") || has("patch-8.1.1564")
+ set signcolumn=number
+else
+ set signcolumn=yes
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""
-" Set file explorer
-"""""""""""""""""""""""""""""""""""""""""""""""""
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 2
-let g:netrw_altv = 1
-let g:netrw_winsize = 15
-augroup ProjectDrawer
+" Use tab for trigger completion with characters ahead and navigate
+inoremap <silent><expr> <TAB>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1] =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion
+if has('nvim')
+    inoremap <silent><expr> <c-space> coc#refresh()
+else
+    inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remplaced by other vim plugin
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+
+nmap <silent> [g <Plug>(coc-diagnostics-preg)
+nmap <silent> ]g <Plug>(coc-diagnostics-next)
+
+" GoTo code navigation
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+    if (index(['vim', 'help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+    elseif (coc#rpc#ready())
+        call CocActionAsync('doHover')
+    else
+        execute '!' . &keywordprg . " " . expand('<cword>')
+    endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>f <Plug>(coc-format-selected)
+nmap <leader>f <Plug>(coc-format-selected)
+
+augroup mygroup
     autocmd!
-    autocmd VimEnter * :Lexplore
-augroup END
+    " Setup formatexpr specified filetype(s).
+    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+    " Update signature help on jump placeholder.
+    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Applying CodeAction to the selected region.
+" Example: '<leader>aap` for current paragraph
+xmap <leader>a <Plug>(coc-codeaction-selected)
+nmap <leader>a <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf <Plug>(coc-fix-current)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-funcobj-i)
+omap ic <Plug>(coc-funcobj-i)
+xmap ac <Plug>(coc-funcobj-a)
+omap ac <Plug>(coc-funcobj-a)
+
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+    nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+    inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+    vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+" Use CTRL-S for selections ranges.
+" Requires 'textDocument/selectionRange' support of language server.
+nmap <silent> <C-r> <Plug>(coc-range-select)
+xmap <silent> <C-r> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocAction('format')
+
+" Add `:Format` command to format current buffer.
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+
+" Add (Neo)Vim's native statusline support.
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline.
+set statusline^=%{coc#status()}
+
+" Mappings for CoCList
+" Show all diagnostics
+nnoremap <silent><nowait> <space>a :<C-u>CocList diagnostics<cr>
+" Manage extensions.
+nnoremap <silent><nowait> <space>e :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent><nowait> <space>c :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent><nowait> <space>o :<C-u>CocList outline<cr>
+" Search workspace symbols.
+nnoremap <silent><nowait> <space>s :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent><nowait> <space>j :<C-u>CocListNext<cr>
+" Do default action for previous item.
+nnoremap <silent><nowait> <space>k :<C-u>CocListPrev<cr>
+" Resume latest coc list
+nnoremap <silent><nowait> <space>p :<C-u>CocListResume<cr>
+
+" Mappings for CoCExplorer
+nnoremap <space>t :CocCommand explorer
+    \ --toggle
+    \ <CR>
+
+au BufEnter *.h let b:fswitchdst = "c,cpp,cc"
+au BufEnter *.c let b:fswitchdst = "h,hpp,hh,hxx"
+
+nnoremap <silent> <A-o> :FSHere<cr>
+nnoremap <silent> <localleader>oh :FSSplitLeft<cr>
+nnoremap <silent> <localleader>oj :FSSplitBelow<cr>
+nnoremap <silent> <localleader>ok :FSSplitAbove<cr>
+nnoremap <silent> <localleader>ol :FSSplitRight<cr>
+
+nnoremap <silent> <A-s> :Vista!!<CR>
+
